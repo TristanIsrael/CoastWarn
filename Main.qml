@@ -8,41 +8,17 @@ ApplicationWindow {
 
     width: 400
     height: 700
-    minimumWidth: 200
-    minimumHeight: 250
     visible: true
     title: qsTr("Coast Warn")
     background: Rectangle {
-        //color: "#001827"
         color: calculateBackColor(AppController.distance)
     }
-
-    /*Text {
-        id: lblTitle
-
-        anchors {
-            top: parent.top
-            topMargin: 10
-            left: parent.left
-            leftMargin: 10
-            right: parent.right
-            rightMargin: 10
-        }
-
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: 30
-        color: "#f7fafa"
-        text: "Coast Warn"
-    }*/
+    visibility: (Qt.platform.os === "ios" || Qt.platform.os === "android")
+         ? Window.FullScreen
+         : Window.Windowed
 
     Text {
         id: lblDistanceSubTitle
-        /*anchors {
-            bottom: lblDistance.top
-            bottomMargin: (lblDistance.height*lblScale.yScale)/2 + 20
-            left: parent.left
-            right: parent.right
-        }*/
         anchors {
             top: parent.top
             topMargin: 10
@@ -56,7 +32,6 @@ ApplicationWindow {
         font.pixelSize: 30
         color: "#dde8e8"
         text: qsTr("Distance to coast")
-        //visible: lblDistance.visible
     }
 
     Text {
@@ -74,6 +49,8 @@ ApplicationWindow {
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 20
         font.italic: true
+        color: "#fcfcfc"
+        text: qsTr("Starting...")
     }
 
     Text {
@@ -149,6 +126,13 @@ ApplicationWindow {
         function onError(errorString) {
             lblInformation.text = errorString
             lblInformation.visible = true
+            lblInformation.color = "red"
+        }
+
+        function onInformation(str) {
+            lblInformation.text = str
+            lblInformation.visible = true
+            lblInformation.color = "#fcfcfc"
         }
     }
 

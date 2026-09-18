@@ -18,7 +18,7 @@ signals:
 public:
     explicit AppController(QObject *parent = nullptr);
 
-    void start() const;
+    void start();
 
 public:
     double distance() const;
@@ -27,6 +27,7 @@ public:
 private:
     void startPositionUpdates() const;
     void calculateDistance();
+    void configureLocation();
 
 private slots:
     void onPositionUpdated(const QGeoPositionInfo&);

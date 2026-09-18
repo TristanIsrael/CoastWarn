@@ -13,54 +13,46 @@ constexpr int SixMilles = 6 * 1800;
 AppController::AppController(QObject *parent)
     : QObject{parent}
 {
-    qDebug() << "Available GPS sources:";
-    qDebug() << QGeoPositionInfoSource::availableSources();
-
-    geoSource_ = QGeoPositionInfoSource::createDefaultSource(this);
-
-    if (!geoSource_) {
-        return;
-    }
-
-    geoSource_->setUpdateInterval(1000); // 1 Hz
-
-    connect(
-        geoSource_,
-        &QGeoPositionInfoSource::positionUpdated,
-        this,
-        &AppController::onPositionUpdated
-    );
-
-    connect(
-        geoSource_,
-        &QGeoPositionInfoSource::errorOccurred,
-        this,
-        &AppController::onPositionError
-    );
-
-    connect(
-        ShomCoastDownloader::instance(),
-        &ShomCoastDownloader::downloadFinished,
-        CoastDistanceCalculator::instance(),
-        &CoastDistanceCalculator::setCoastline
-    );
-
-    connect(ShomCoastDownloader::instance(),
-        &ShomCoastDownloader::downloadFinished,
-        this,
-        &AppController::calculateDistance
-    );
 
 }
 
 void AppController::startPositionUpdates() const
 {
     if(geoSource_ != nullptr) {
+        geoSource_->setUpdateInterval(1000); // 1 Hz
+
+        connect(
+            geoSource_,
+            &QGeoPositionInfoSource::positionUpdated,
+            this,
+            &AppController::onPositionUpdated
+            );
+
+        connect(
+            geoSource_,
+            &QGeoPositionInfoSource::errorOccurred,
+            this,
+            &AppController::onPositionError
+            );
+
+        connect(
+            ShomCoastDownloader::instance(),
+            &ShomCoastDownloader::downloadFinished,
+            CoastDistanceCalculator::instance(),
+            &CoastDistanceCalculator::setCoastline
+            );
+
+        connect(ShomCoastDownloader::instance(),
+            &ShomCoastDownloader::downloadFinished,
+            this,
+            &AppController::calculateDistance
+            );
+
         geoSource_->startUpdates();
     }
 }
 
-void AppController::start() const
+void AppController::start()
 {
     QLocationPermission permission;
 
@@ -75,7 +67,7 @@ void AppController::start() const
             this,
             [this](const QPermission &permission) {
                 if (permission.status() == Qt::PermissionStatus::Granted) {
-                    startPositionUpdates();
+                    configureLocation();
                 } else {
                     emit error(tr("Location permission denied"));
                     qWarning() << "Location permission denied.";
@@ -83,9 +75,25 @@ void AppController::start() const
             });
 
         return;
+    } else {
+        configureLocation();
+    }
+}
 
+void AppController::configureLocation()
+{
+    emit information(tr("Locating..."));
+    qDebug() << "Available GPS sources:";
+    qDebug() << QGeoPositionInfoSource::availableSources();
+
+    geoSource_ = QGeoPositionInfoSource::createDefaultSource(this);
+
+    if (!geoSource_) {
+        emit error(tr("No source found"));
+        return;
     }
 
+    startPositionUpdates();
 }
 
 double AppController::distance() const
@@ -120,6 +128,7 @@ void AppController::calculateDistance() {
         distance_ = qRound(dist);
     }
 
+#ifdef QT_DEBUG
     qDebug() << "distance =" << distance_;
 
     if (distance_ <= 300.0) {
@@ -131,6 +140,7 @@ void AppController::calculateDistance() {
     } else {
         qDebug() << "Au-delà des 500m";
     }
+#endif
 
     emit distanceChanged();
     emit maxSpeedChanged();

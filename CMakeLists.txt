@@ -9,11 +9,6 @@ find_package(Qt6 REQUIRED COMPONENTS Quick Positioning)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
-# Content of downloaded design from Figma to Qt or similar
-if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/importedcontent/CMakeLists.txt")
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/importedcontent)
-endif()
-
 if(ANDROID)
     message("Building for Android")
 elseif(APPLE)
@@ -44,14 +39,14 @@ elseif(APPLE)
         # Resources for iOS
         message("Building for iOS")
 
+        set(app_icon "${CMAKE_SOURCE_DIR}/resources/ios/CoastWarn.icns")
+        set_source_files_properties(${app_icon} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+        set(INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/ios/Info.plist")
+
         qt_add_executable(CoastWarn
             main.cpp
             ${app_icon}
         )
-
-        set(app_icon "${CMAKE_SOURCE_DIR}/resources/ios/CoastWarn.icns")
-        set_source_files_properties(${app_icon} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-        set(INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/ios/Info.plist")
 
         set_target_properties(CoastWarn PROPERTIES
             MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
@@ -59,7 +54,25 @@ elseif(APPLE)
             MACOSX_BUNDLE TRUE
             MACOSX_BUNDLE_INFO_PLIST ${INFO_PLIST}
             MACOSX_BUNDLE_ICON_FILE CoastWarn.icns
+            QT_IOS_LAUNCH_SCREEN "${CMAKE_CURRENT_SOURCE_DIR}/resources/ios/LaunchScreen.storyboard"
         )
+
+        #set_source_files_properties(
+        #    resources/ios/LaunchScreen.storyboard
+        #    PROPERTIES
+        #        MACOSX_PACKAGE_LOCATION Resources
+        #)
+
+        #set_source_files_properties(
+        #    resources/ios/LaunchImage.png
+        #    PROPERTIES
+        #        MACOSX_PACKAGE_LOCATION Resources
+        #)
+
+        #target_sources(CoastWarn PRIVATE
+        #    resources/ios/LaunchScreen.storyboard
+        #    resources/ios/LaunchImage.png
+        #)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "")
         message("Building for unknown system")
     endif()
@@ -87,16 +100,15 @@ target_link_libraries(CoastWarn
 
 # Packaging configuration
 if(APPLE)
-    if(IOS AND launch_images)
-        # Packaging for iOS
-        message("Building for MacOS")
-        file(GLOB_RECURSE launch_images CONFIGURE_DEPENDS "resources/ios/LaunchImage*.png")
-
-        target_sources(CoastWarn PRIVATE ${launch_images})
-        set_source_files_properties(
-            ${launch_images}
-            PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-    endif()
+    #file(GLOB_RECURSE launch_images CONFIGURE_DEPENDS "resources/ios/LaunchImage*.png")
+    #if(IOS AND launch_images)
+        # Packaging for iOS        
+    #    target_sources(CoastWarn PRIVATE ${launch_images})
+    #    set_source_files_properties(
+    #        ${launch_images}
+    #        PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    #endif()
+    message(Packaging for iOS)
 elseif(ANDROID)
     qt_add_resources(CoastWarn "configuration"
         PREFIX "/"
