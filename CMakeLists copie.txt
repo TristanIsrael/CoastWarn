@@ -2,17 +2,18 @@ cmake_minimum_required(VERSION 3.16)
 
 project(CoastWarn VERSION 1.0 LANGUAGES CXX)
 
+#set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+#set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTORCC ON)
+#set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Positioning)
 
 qt_standard_project_setup(REQUIRES 6.10)
-
-# Content of downloaded design from Figma to Qt or similar
-if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/importedcontent/CMakeLists.txt")
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/importedcontent)
-endif()
 
 if(ANDROID)
     message("Building for Android")

@@ -12,5 +12,7 @@
 	<string>This app uses your location in the background to monitor your distance from the coast.</string>
 	<key>NSLocationUsageDescription</key>
 	<string>This app uses your location to calculate your distance from the coast.</string>
+	<key>CFBundleIconFile</key>
+	<string>CoastWarn.icns</string>
 </dict>
 </plist>

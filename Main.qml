@@ -56,14 +56,14 @@ ApplicationWindow {
         font.pixelSize: 30
         color: "#dde8e8"
         text: qsTr("Distance to coast")
-        visible: lblDistance.visible
+        //visible: lblDistance.visible
     }
 
     Text {
         id: lblInformation
 
         anchors {
-            top: lblTitle.bottom
+            top: lblDistanceSubTitle.bottom
             topMargin: 10
             left: parent.left
             leftMargin: 10
@@ -175,7 +175,7 @@ ApplicationWindow {
 
     function calculateBackColor(distance) {
         if(distance === 0)
-            return "transparent"
+            return "#030f2c"
 
         if(distance < 300) {
             //return "#E57373"
